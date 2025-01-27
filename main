@@ -4,9 +4,15 @@ trap 'tput cnorm; echo; exit' INT TERM
 
 intervals_in_min=(25 5 25 5 25 5 25 20)
 gauge_len=30
+project_dir="$HOME/Personal/pomodoro_timer"
 for i in ${intervals_in_min[@]}; do
     start=$SECONDS
-    notify-send -i "$HOME/Personal/pomodoro_timer/tomato.png" "Pomodoro" "Starting $i min interval" 
+    if [[ $i -eq 25 ]]; then
+        notify-send -i "$project_dir/tomato.png" "Pomodoro" "Starting $i min interval" 
+    else
+        notify-send -i "$project_dir/tomato.png" "Pomodoro" "Starting $i min break" 
+    fi
+    paplay "$project_dir/notification.mp3" &
     interval_in_sec=$(($i*60))
     while (( ($SECONDS - $start) < $interval_in_sec )); do
         current=$(($SECONDS - $start))
