@@ -1,0 +1,28 @@
+#! /bin/sh
+tput civis  # Hide the cursor
+trap 'tput cnorm; echo; exit' INT TERM
+
+intervals_in_min=(25 5 25 5 25 5 25 20)
+gauge_len=30
+for i in ${intervals_in_min[@]}; do
+    start=$SECONDS
+    notify-send -i "$HOME/Personal/pomodoro_timer/tomato.png" "Pomodoro" "Starting $i min interval" 
+    interval_in_sec=$(($i*60))
+    while (( ($SECONDS - $start) < $interval_in_sec )); do
+        current=$(($SECONDS - $start))
+        progress=$((($current / ($interval_in_sec / $gauge_len)) + 1))
+        progress_bar="\e[32m"
+        for ((j=0; j<$progress; j++)); do
+            progress_bar="$progress_bar󰹞"
+        done
+        progress_bar="$progress_bar\e[0m"
+        for ((j=0; j<$(($gauge_len - $progress)); j++)); do
+            progress_bar="$progress_bar󰹟"
+        done
+        echo -ne "$(($i - ($current / 60))) min remaining \e[31m[\e[0m$progress_bar\e[31m]\e[0m \r"
+        sleep 1
+    done
+done
+
+tput cnorm  # Show the cursor again
+echo        # Move to a new line
