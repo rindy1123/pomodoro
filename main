@@ -7,12 +7,16 @@ gauge_len=30
 project_dir="$HOME/Personal/pomodoro_timer"
 for i in ${intervals_in_min[@]}; do
     start=$SECONDS
+
+    # Notification
     if [[ $i -eq 25 ]]; then
         notify-send -i "$project_dir/tomato.png" "Pomodoro" "Starting $i min interval" 
     else
         notify-send -i "$project_dir/tomato.png" "Pomodoro" "Starting $i min break" 
     fi
     paplay "$project_dir/notification.mp3" &
+
+    # Wait for the interval to finish
     interval_in_sec=$(($i*60))
     while (( ($SECONDS - $start) < $interval_in_sec )); do
         current=$(($SECONDS - $start))
@@ -28,6 +32,12 @@ for i in ${intervals_in_min[@]}; do
         echo -ne "$(($i - ($current / 60))) min remaining \e[31m[\e[0m$progress_bar\e[31m]\e[0m \r"
         sleep 1
     done
+
+    # Wait for the user to press enter to finish break and start the next interval
+    if [ $i -ne 25 ]; then
+        echo -ne "Break finished. Press Enter to start the next work interval...\r"
+        read -r
+    fi
 done
 
 tput cnorm  # Show the cursor again
