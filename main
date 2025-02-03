@@ -35,6 +35,8 @@ for i in ${intervals_in_min[@]}; do
 
     # Wait for the user to press enter to finish break and start the next interval
     if [ $i -ne 25 ]; then
+        notify-send -i "$project_dir/tomato.png" "Pomodoro" "Time to buckle down!"
+        paplay "$project_dir/notification.mp3" &
         echo -ne "Break finished. Press Enter to start the next work interval...\r"
         read -r
     fi
